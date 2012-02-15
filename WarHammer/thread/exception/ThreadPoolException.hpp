@@ -36,6 +36,8 @@
 #ifndef __WarHammer_thread_exception_THREADPOOLEXCEPTION_HPP__
 #define __WarHammer_thread_exception_THREADPOOLEXCEPTION_HPP__
 
+#include "../../exception/Exception.hpp"
+
 namespace WarHammer
 {
 	namespace thread
@@ -46,7 +48,7 @@ namespace WarHammer
 			class ThreadPoolException
 			{
 			public:
-				static const unsigned int THREAD_QUANTITY_ALREADY_SET;
+				static const unsigned int THREAD_QUANTITY_ALREADY_SET = GetExceptionUniqueIdentification();
 			};
 
 		}

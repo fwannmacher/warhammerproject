@@ -26,59 +26,44 @@
  *                                  N   NN  N N N N N   N    N
  *                                N N   N N NNN NNN NNN NNN  N
  *
- * ExpressionInterpreterSyntaxValidator.tpp
+ * StackTracer.hpp
  *
- *  Created on: Jun 02, 2011
+ *  Created on: Sep 16, 2011
  *      Author: Felipe Wannmacher
  *	   License: LGPL - http://http://www.gnu.org/licenses/lgpl.html
  */
 
-#ifdef __WarHammer_util_EXPRESSIONINTERPRETERSYNTAXVALIDATOR_HPP__
+#ifndef __WarHammer_exception_util_STACKTRACER_HPP__
+#define __WarHammer_exception_util_STACKTRACER_HPP__
 
-#include "../exception/Exception.hpp"
+#include <map>
+#include "../../util/Singleton.hpp"
+#include "../../util/String.hpp"
 
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::ExpressionInterpreterSyntaxValidator(WarHammer::util::String expression)
+namespace WarHammer
 {
-	this->_expression = expression;
-	this->_validExpressionValue = false;
-}
-
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::~ExpressionInterpreterSyntaxValidator(void)
-{
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::accept(WarHammer::util::IExpressionInterpreterComponentVisitor<ExpressionResult>* visitor)
-{
-	try
+	namespace exception
 	{
-		visitor->visit(this);
+		namespace util
+		{
+
+			class StackTracer: public WarHammer::util::Singleton<StackTracer>
+			{
+				friend class WarHammer::util::Singleton<StackTracer>;
+			private:
+				std::map<unsigned int, WarHammer::util::String> _stackTraces;
+			private:
+				StackTracer(void);
+				WarHammer::util::String _clearFilePath(WarHammer::util::String filePath);
+			public:
+				virtual ~StackTracer(void);
+				void appendStackTrace(unsigned int code, WarHammer::util::String trace);
+				WarHammer::util::String getStackTrace(unsigned int code, WarHammer::util::String fileName, unsigned int lineNumber);
+				void initializeNewStackTrace(unsigned int code, WarHammer::util::String exceptionName);
+			};
+
+		}
 	}
-	catch(WarHammer::exception::Exception exception)
-	{
-		ThrowException(exception);
-	}
-}
-
-template<typename ExpressionResult>
-WarHammer::util::String WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpression(void)
-{
-	return this->_expression;
-}
-
-template<typename ExpressionResult>
-ExpressionResult WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpressionResult(void)
-{
-	ExpressionResult expressionResult;
-
-	return expressionResult;
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::setExpressionResult(ExpressionResult expressionResult)
-{
 }
 
 #endif

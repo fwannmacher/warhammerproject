@@ -26,59 +26,37 @@
  *                                  N   NN  N N N N N   N    N
  *                                N N   N N NNN NNN NNN NNN  N
  *
- * ExpressionInterpreterSyntaxValidator.tpp
+ * DirectoryException.hpp
  *
- *  Created on: Jun 02, 2011
+ *  Created on: Sep 12, 2011
  *      Author: Felipe Wannmacher
  *	   License: LGPL - http://http://www.gnu.org/licenses/lgpl.html
  */
 
-#ifdef __WarHammer_util_EXPRESSIONINTERPRETERSYNTAXVALIDATOR_HPP__
+#ifndef __WarHammer_io_exception_DIRECTORYEXCEPTION_HPP__
+#define __WarHammer_io_exception_DIRECTORYEXCEPTION_HPP__
 
-#include "../exception/Exception.hpp"
+#include "../../exception/Exception.hpp"
 
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::ExpressionInterpreterSyntaxValidator(WarHammer::util::String expression)
+namespace WarHammer
 {
-	this->_expression = expression;
-	this->_validExpressionValue = false;
-}
-
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::~ExpressionInterpreterSyntaxValidator(void)
-{
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::accept(WarHammer::util::IExpressionInterpreterComponentVisitor<ExpressionResult>* visitor)
-{
-	try
+	namespace io
 	{
-		visitor->visit(this);
+		namespace exception
+		{
+
+			class DirectoryException
+			{
+			public:
+				static const unsigned int OPEN_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int INVALID_NAME = GetExceptionUniqueIdentification();
+				static const unsigned int CLOSE_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int CLOSED = GetExceptionUniqueIdentification();
+				static const unsigned int CREATE_ERROR = GetExceptionUniqueIdentification();
+			};
+
+		}
 	}
-	catch(WarHammer::exception::Exception exception)
-	{
-		ThrowException(exception);
-	}
-}
-
-template<typename ExpressionResult>
-WarHammer::util::String WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpression(void)
-{
-	return this->_expression;
-}
-
-template<typename ExpressionResult>
-ExpressionResult WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpressionResult(void)
-{
-	ExpressionResult expressionResult;
-
-	return expressionResult;
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::setExpressionResult(ExpressionResult expressionResult)
-{
 }
 
 #endif

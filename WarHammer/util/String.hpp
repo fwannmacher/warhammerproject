@@ -51,17 +51,18 @@ namespace WarHammer
 		private:
 			std::string _content;
 		public:
-			static String valueOf(int value);
-			static String valueOf(unsigned int value);
-			static String valueOf(short value);
-			static String valueOf(unsigned short value);
-			static String valueOf(long value);
-			static String valueOf(unsigned long value);
-			static String valueOf(char value);
-			static String valueOf(unsigned char value);
-			static String valueOf(bool value);
-			static String valueOf(float value);
-			static String valueOf(double value);
+			static String ValueOf(int value);
+			static String ValueOf(unsigned int value);
+			static String ValueOf(short value);
+			static String ValueOf(unsigned short value);
+			static String ValueOf(long value);
+			static String ValueOf(unsigned long value);
+			static String ValueOf(char value);
+			static String ValueOf(unsigned char value);
+			static String ValueOf(bool value);
+			static String ValueOf(float value);
+			static String ValueOf(double value);
+			static String Format(String format, ...);
 		public:
 			String& operator=(std::string& string);
 			String& operator=(const std::string& string);
@@ -105,6 +106,7 @@ namespace WarHammer
 			String(String& string);
 			String(const String& string);
 			String(char* string);
+			String(char* string, unsigned int size);
 			String(const char* string);
 			String(char character);
 			virtual ~String(void);

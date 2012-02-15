@@ -49,7 +49,7 @@ WarHammer::reflect::TypeReflector::~TypeReflector(void)
 void WarHammer::reflect::TypeReflector::registerType(WarHammer::util::String typeAlias, IType* type)
 {
 	if(this->_types.find(typeAlias.getContent()) != this->_types.end())
-		throw WarHammer::exception::Exception(WarHammer::reflect::exception::TypeReflectorException::TYPE_ALREADY_REGISTERED, this);
+		ThrowNewException(WarHammer::reflect::exception::TypeReflectorException::TYPE_ALREADY_REGISTERED, this);
 
 	this->_types[typeAlias.getContent()] = type;
 }
@@ -57,7 +57,7 @@ void WarHammer::reflect::TypeReflector::registerType(WarHammer::util::String typ
 void* WarHammer::reflect::TypeReflector::newInstanceOf(WarHammer::util::String typeAlias)
 {
 	if(this->_types.find(typeAlias.getContent()) == this->_types.end())
-		throw WarHammer::exception::Exception(WarHammer::reflect::exception::TypeReflectorException::UNREGISTERED_TYPE, this);
+		ThrowNewException(WarHammer::reflect::exception::TypeReflectorException::UNREGISTERED_TYPE, this);
 
 	return this->_types[typeAlias.getContent()]->newInstance();
 }

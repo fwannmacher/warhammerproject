@@ -36,6 +36,8 @@
 #ifndef __WarHammer_datastructure_exception_ITERATOREXCEPTION_HPP__
 #define __WarHammer_datastructure_exception_ITERATOREXCEPTION_HPP__
 
+#include "../../exception/Exception.hpp"
+
 namespace WarHammer
 {
 	namespace datastructure
@@ -46,8 +48,8 @@ namespace WarHammer
 			class IteratorException
 			{
 			public:
-				static const unsigned int NULL_STRATEGY_POINTER;
-				static const unsigned int NULL_ROOT_NODE_POINTER;
+				static const unsigned int NULL_STRATEGY_POINTER = GetExceptionUniqueIdentification();
+				static const unsigned int NULL_ROOT_NODE_POINTER = GetExceptionUniqueIdentification();
 			};
 
 		}

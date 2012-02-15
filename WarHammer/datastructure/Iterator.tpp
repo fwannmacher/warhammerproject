@@ -110,7 +110,7 @@ template<typename Node, typename Content>
 WarHammer::datastructure::Iterator<Node, Content>& WarHammer::datastructure::Iterator<Node, Content>::operator++(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	if(this->_current)
 	{
@@ -135,7 +135,7 @@ WarHammer::datastructure::Iterator<Node, Content> WarHammer::datastructure::Iter
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return iterator;
@@ -145,7 +145,7 @@ template<typename Node, typename Content>
 WarHammer::datastructure::Iterator<Node, Content>& WarHammer::datastructure::Iterator<Node, Content>::operator--(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	if(this->_current)
 	{
@@ -170,7 +170,7 @@ WarHammer::datastructure::Iterator<Node, Content> WarHammer::datastructure::Iter
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return iterator;
@@ -186,7 +186,7 @@ WarHammer::datastructure::Iterator<Node, Content>& WarHammer::datastructure::Ite
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return *this;
@@ -202,7 +202,7 @@ WarHammer::datastructure::Iterator<Node, Content>& WarHammer::datastructure::Ite
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return *this;
@@ -219,7 +219,7 @@ WarHammer::datastructure::Iterator<Node, Content> WarHammer::datastructure::Iter
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return iterator;
@@ -236,7 +236,7 @@ WarHammer::datastructure::Iterator<Node, Content> WarHammer::datastructure::Iter
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	return iterator;
@@ -246,7 +246,7 @@ template<typename Node, typename Content>
 Content WarHammer::datastructure::Iterator<Node, Content>::operator*(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	return this->_strategy->getNodeContent(this->_current);
 }
@@ -255,7 +255,7 @@ template<typename Node, typename Content>
 Content WarHammer::datastructure::Iterator<Node, Content>::operator->(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	return this->_strategy->getNodeContent(this->_current);
 }
@@ -264,7 +264,7 @@ template<typename Node, typename Content>
 bool WarHammer::datastructure::Iterator<Node, Content>::hasNext(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	return this->_strategy->hasNextNode(this);
 }
@@ -273,7 +273,7 @@ template<typename Node, typename Content>
 bool WarHammer::datastructure::Iterator<Node, Content>::hasPrevious(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	return this->_strategy->hasPreviousNode(this);
 }
@@ -324,10 +324,10 @@ template<typename Node, typename Content>
 void WarHammer::datastructure::Iterator<Node, Content>::goesFirst(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	if(!this->_root)
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_ROOT_NODE_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_ROOT_NODE_POINTER, this);
 
 	Iterator<Node, Content> first = this->_strategy->findFirst(this->_root);
 	this->_previous = first._previous;
@@ -339,10 +339,10 @@ template<typename Node, typename Content>
 void WarHammer::datastructure::Iterator<Node, Content>::goesLast(void)
 {
 	if(!this->_strategy.getContent())
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_STRATEGY_POINTER, this);
 
 	if(!this->_root)
-		throw WarHammer::exception::Exception(WarHammer::datastructure::exception::IteratorException::NULL_ROOT_NODE_POINTER, this);
+		ThrowNewException(WarHammer::datastructure::exception::IteratorException::NULL_ROOT_NODE_POINTER, this);
 
 	Iterator<Node, Content> last = this->_strategy->findLast(this->_root);
 	this->_previous = last._previous;

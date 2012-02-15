@@ -164,7 +164,7 @@ template<typename Content>
 Content& WarHammer::util::SmartPointer<Content>::operator*(void)
 {
 	if(!this->_content)
-		throw WarHammer::exception::Exception(WarHammer::exception::PointerException::NULL_POINTER, this);
+		ThrowNewException(WarHammer::exception::PointerException::NULL_POINTER, this);
 
 	return *this->_content;
 }
@@ -173,7 +173,7 @@ template<typename Content>
 Content* WarHammer::util::SmartPointer<Content>::operator->(void)
 {
 	if(!this->_content)
-		throw WarHammer::exception::Exception(WarHammer::exception::PointerException::NULL_POINTER, this);
+		ThrowNewException(WarHammer::exception::PointerException::NULL_POINTER, this);
 
 	return this->_content;
 }

@@ -55,7 +55,7 @@ void WarHammer::util::ExpressionInterpreterStringParser<ExpressionResult>::accep
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 
