@@ -26,59 +26,52 @@
  *                                  N   NN  N N N N N   N    N
  *                                N N   N N NNN NNN NNN NNN  N
  *
- * ExpressionInterpreterSyntaxValidator.tpp
+ * UniqueIdentificationGenerator.hpp
  *
- *  Created on: Jun 02, 2011
+ *  Created on: Jul 15, 2011
  *      Author: Felipe Wannmacher
  *	   License: LGPL - http://http://www.gnu.org/licenses/lgpl.html
  */
 
-#ifdef __WarHammer_util_EXPRESSIONINTERPRETERSYNTAXVALIDATOR_HPP__
+#ifndef __WarHammer_thread_util_UNIQUEIDENTIFICATIONGENERATOR_HPP__
+#define __WarHammer_thread_util_UNIQUEIDENTIFICATIONGENERATOR_HPP__
 
-#include "../exception/Exception.hpp"
+#include "../../util/UniqueIdentificationGenerator.hpp"
 
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::ExpressionInterpreterSyntaxValidator(WarHammer::util::String expression)
+namespace WarHammer
 {
-	this->_expression = expression;
-	this->_validExpressionValue = false;
-}
-
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::~ExpressionInterpreterSyntaxValidator(void)
-{
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::accept(WarHammer::util::IExpressionInterpreterComponentVisitor<ExpressionResult>* visitor)
-{
-	try
+	namespace thread
 	{
-		visitor->visit(this);
+		namespace util
+		{
+
+			/**
+			 * @class WarHammer::thread::util::UniqueIdentificationGenerator
+			 *
+			 * @brief A generator of unique task codes.
+			 *
+			 * WarHammer::thread::util::UniqueIdentificationGenerator is a generator of unique unique task codes.
+			 *
+			 * @see WarHammer::util::UniqueIdentificationGenerator
+			 *
+			 * @author Felipe Wannmacher
+			 */
+			class UniqueIdentificationGenerator: public WarHammer::util::UniqueIdentificationGenerator
+			{
+				/**
+				 * @brief Access to the private constructor.
+				 *
+				 * Only the superclass has access to the class constructor.
+				 */
+				friend class WarHammer::util::Singleton<UniqueIdentificationGenerator>;
+			private:
+				UniqueIdentificationGenerator(void);
+			public:
+				virtual ~UniqueIdentificationGenerator(void);
+			};
+
+		}
 	}
-	catch(WarHammer::exception::Exception exception)
-	{
-		ThrowException(exception);
-	}
-}
-
-template<typename ExpressionResult>
-WarHammer::util::String WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpression(void)
-{
-	return this->_expression;
-}
-
-template<typename ExpressionResult>
-ExpressionResult WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpressionResult(void)
-{
-	ExpressionResult expressionResult;
-
-	return expressionResult;
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::setExpressionResult(ExpressionResult expressionResult)
-{
 }
 
 #endif

@@ -67,7 +67,7 @@ ExpressionResult WarHammer::util::ExpressionInterpreter<ExpressionResult>::inter
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 
 	components.clear();

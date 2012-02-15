@@ -34,7 +34,7 @@
  */
 
 #include "TaskManager.hpp"
-#include "util/TaskIdentificationGenerator.hpp"
+#include "util/UniqueIdentificationGenerator.hpp"
 
 WarHammer::thread::TaskManager::TaskManager(void)
 {
@@ -70,7 +70,7 @@ bool WarHammer::thread::TaskManager::_isTaskDone(unsigned int identification)
 
 unsigned int WarHammer::thread::TaskManager::addTask(WarHammer::util::SmartPointer<WarHammer::util::IFunctor<bool> > task)
 {
-	unsigned int identification = WarHammer::thread::util::TaskIdentificationGenerator::Instance()->generateIdentification();
+	unsigned int identification = WarHammer::thread::util::UniqueIdentificationGenerator::Instance()->generateIdentification();
 
 	this->_undoneTasksMutex.lock();
 	this->_undoneTasks.push(std::pair<unsigned int, WarHammer::util::SmartPointer<WarHammer::util::IFunctor<bool> > >(identification, task));
@@ -107,5 +107,5 @@ void WarHammer::thread::TaskManager::setDoneTask(std::pair<unsigned int, WarHamm
 	this->_doneTasksMutex.lock();
 	this->_doneTasks.push_front(task);
 	this->_doneTasksMutex.unlock();
-	WarHammer::thread::util::TaskIdentificationGenerator::Instance()->releaseIdentification(task.first);
+	WarHammer::thread::util::UniqueIdentificationGenerator::Instance()->releaseIdentification(task.first);
 }

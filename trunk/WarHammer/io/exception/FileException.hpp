@@ -36,6 +36,8 @@
 #ifndef __WarHammer_io_exception_FILEEXCEPTION_HPP__
 #define __WarHammer_io_exception_FILEEXCEPTION_HPP__
 
+#include "../../exception/Exception.hpp"
+
 namespace WarHammer
 {
 	namespace io
@@ -46,16 +48,17 @@ namespace WarHammer
 			class FileException
 			{
 			public:
-				static const unsigned int OPEN_ERROR;
-				static const unsigned int READ_ERROR;
-				static const unsigned int INVALID_NAME;
-				static const unsigned int CLOSE_ERROR;
-				static const unsigned int CLOSED;
-				static const unsigned int FLUSH_ERROR;
-				static const unsigned int WRITE_ERROR;
-				static const unsigned int WRITE_MODE_ERROR;
-				static const unsigned int READ_MODE_ERROR;
-				static const unsigned int END_OF_FILE;
+				static const unsigned int OPEN_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int READ_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int INVALID_NAME = GetExceptionUniqueIdentification();
+				static const unsigned int CLOSE_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int CLOSED = GetExceptionUniqueIdentification();
+				static const unsigned int FLUSH_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int WRITE_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int WRITE_MODE_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int READ_MODE_ERROR = GetExceptionUniqueIdentification();
+				static const unsigned int END_OF_FILE = GetExceptionUniqueIdentification();
+				static const unsigned int CREATE_ERROR = GetExceptionUniqueIdentification();
 			};
 
 		}

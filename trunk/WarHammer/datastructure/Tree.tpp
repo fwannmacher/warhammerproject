@@ -63,7 +63,7 @@ std::vector<Content> WarHammer::datastructure::Tree<Content, TreeNodeSubclass>::
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 

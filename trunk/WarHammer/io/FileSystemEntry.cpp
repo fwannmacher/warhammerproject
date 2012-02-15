@@ -35,11 +35,23 @@
 
 #include "FileSystemEntry.hpp"
 
-WarHammer::io::FileSystemEntry::FileSystemEntry(void)
+WarHammer::io::FileSystemEntry::FileSystemEntry(WarHammer::util::String completeEntryName)
 {
-	this->_path = "";
-	this->_name = "";
-	this->_flags = 0;
+	unsigned int index = 0;
+	std::vector<WarHammer::util::String> path = completeEntryName.split("\\/");
+
+	for(index = 0; index < path.size() - 1; ++index)
+	{
+		if(this->_path != "")
+			this->_path += '/';
+
+		this->_path += path[index];
+	}
+
+	if(this->_path == "")
+		this->_path = '.';
+
+	this->_name = path[index];
 }
 
 WarHammer::io::FileSystemEntry::~FileSystemEntry(void)
@@ -59,27 +71,4 @@ WarHammer::util::String WarHammer::io::FileSystemEntry::getPath(void)
 WarHammer::util::String WarHammer::io::FileSystemEntry::getCompleteName(void)
 {
 	return this->_path + '/' + this->_name;
-}
-
-void WarHammer::io::FileSystemEntry::open(WarHammer::util::String completeEntryName, unsigned int openFlags)
-{
-	unsigned int index = 0;
-	std::vector<WarHammer::util::String> path = completeEntryName.split("\\/");
-
-	this->_path = "";
-	this->_name = "";
-	this->_flags = openFlags;
-
-	for(index = 0; index < path.size() - 1; ++index)
-	{
-		if(this->_path != "")
-			this->_path += '/';
-
-		this->_path += path[index];
-	}
-
-	if(this->_path == "")
-		this->_path = '.';
-
-	this->_name = path[index];
 }

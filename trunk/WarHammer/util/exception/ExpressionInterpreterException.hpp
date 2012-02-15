@@ -36,6 +36,8 @@
 #ifndef __WarHammer_util_exception_EXPRESSIONINTERPRETEREXCEPTION_HPP__
 #define __WarHammer_util_exception_EXPRESSIONINTERPRETEREXCEPTION_HPP__
 
+#include "../../exception/Exception.hpp"
+
 namespace WarHammer
 {
 	namespace util
@@ -46,7 +48,7 @@ namespace WarHammer
 			class ExpressionInterpreterException
 			{
 			public:
-				static const unsigned int INVALID_EXPRESSION;
+				static const unsigned int INVALID_EXPRESSION = GetExceptionUniqueIdentification();
 			};
 
 		}

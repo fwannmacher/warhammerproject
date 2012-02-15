@@ -36,6 +36,8 @@
 #ifndef __WarHammer_exception_POINTEREXCEPTION_HPP__
 #define __WarHammer_exception_POINTEREXCEPTION_HPP__
 
+#include "Exception.hpp"
+
 namespace WarHammer
 {
 	namespace exception
@@ -60,13 +62,13 @@ namespace WarHammer
 			 *
 			 * An exception code for null pointer references.
 			 */
-			static const unsigned int NULL_POINTER;
+			static const unsigned int NULL_POINTER = GetExceptionUniqueIdentification();
 			/**
 			 * @brief An exception code for array index out of bound.
 			 *
 			 * An exception code for array index out of bound.
 			 */
-			static const unsigned int INDEX_OUT_OF_BOUND;
+			static const unsigned int INDEX_OUT_OF_BOUND = GetExceptionUniqueIdentification();
 		};
 
 	}

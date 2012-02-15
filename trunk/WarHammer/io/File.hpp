@@ -36,6 +36,7 @@
 #ifndef __WarHammer_io_FILE_HPP__
 #define __WarHammer_io_FILE_HPP__
 
+#include <cstdio>
 #include "FileSystemEntry.hpp"
 #include "IInputStream.hpp"
 #include "IOutputStream.hpp"
@@ -52,12 +53,16 @@ namespace WarHammer
 			static const unsigned int BINARY = 0x01;
 			static const unsigned int READ = 0x02;
 			static const unsigned int WRITE = 0x04;
-			static const unsigned int CREATE = 0x08;
 			static const unsigned int APPEND = 0x10;
-		private:
+		public:
+			static File* CreateFile(WarHammer::util::String completeFileName);
+		protected:
 			bool _closed;
+			unsigned int _flags;
 			FILE* _file;
 			WarHammer::util::String _openFlags;
+		protected:
+			virtual void _open(WarHammer::util::String completeEntryName, unsigned int openFlags);
 		public:
 			File(void);
 			File(WarHammer::util::String completeEntryName, unsigned int openFlags);
@@ -65,8 +70,8 @@ namespace WarHammer
 			virtual void close(void);
 			virtual void flush(void);
 			virtual bool isDirectory(void);
+			virtual bool isFile(void);
 			virtual void open(void);
-			virtual void open(WarHammer::util::String completeEntryName, unsigned int openFlags);
 			virtual WarHammer::util::String readAll(void);
 			virtual bool readBoolean(void);
 			virtual char* readBytes(unsigned int quantity);

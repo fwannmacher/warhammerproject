@@ -46,19 +46,18 @@ namespace WarHammer
 		class FileSystemEntry
 		{
 		protected:
-			unsigned int _flags;
 			WarHammer::util::String _name,
 									_path;
 		public:
-			FileSystemEntry(void);
+			FileSystemEntry(WarHammer::util::String completeEntryName);
 			virtual ~FileSystemEntry(void);
 			virtual void close(void) = 0;
 			virtual WarHammer::util::String getName(void);
 			virtual WarHammer::util::String getPath(void);
 			virtual WarHammer::util::String getCompleteName(void);
 			virtual bool isDirectory(void) = 0;
+			virtual bool isFile(void) = 0;
 			virtual void open(void) = 0;
-			virtual void open(WarHammer::util::String completeEntryName, unsigned int openFlags);
 		};
 
 	}

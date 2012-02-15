@@ -39,26 +39,20 @@
 #include "exception/FileException.hpp"
 #include "../exception/Exception.hpp"
 
-WarHammer::io::File::File(void): WarHammer::io::FileSystemEntry()
+WarHammer::io::File::File(WarHammer::util::String completeEntryName, unsigned int openFlags): WarHammer::io::FileSystemEntry(completeEntryName)
 {
 	this->_closed = true;
 	this->_file = NULL;
 	this->_openFlags = "";
-}
-
-WarHammer::io::File::File(WarHammer::util::String completeEntryName, unsigned int openFlags): WarHammer::io::FileSystemEntry()
-{
-	this->_closed = true;
-	this->_file = NULL;
-	this->_openFlags = "";
+	this->_flags = openFlags;
 
 	try
 	{
-		this->open(completeEntryName, openFlags);
+		this->_open(completeEntryName, openFlags);
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 
@@ -70,48 +64,33 @@ WarHammer::io::File::~File(void)
 	delete this->_file;
 }
 
-void WarHammer::io::File::close(void)
+WarHammer::io::File* WarHammer::io::File::CreateFile(WarHammer::util::String completeFileName)
 {
-	if(!this->_closed)
-	{
-		this->_closed = true;
+	if(completeFileName == "")
+		ThrowNewException(WarHammer::io::exception::FileException::INVALID_NAME, NULL);
 
-		if(fclose(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::CLOSE_ERROR, this);
+	FILE* file = fopen(completeFileName.getCString(), "w+");
+
+	if(!file)
+		ThrowNewException(WarHammer::io::exception::FileException::CREATE_ERROR, NULL);
+
+	if(fclose(file))
+		ThrowNewException(WarHammer::io::exception::FileException::CREATE_ERROR, NULL);
+
+	try
+	{
+		return new File(completeFileName, File::WRITE);
+	}
+	catch(WarHammer::exception::Exception exception)
+	{
+		ThrowException(exception);
 	}
 }
 
-void WarHammer::io::File::flush(void)
-{
-	if(this->_closed)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::CLOSED, this);
-
-	if(fflush(this->_file))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::FLUSH_ERROR, this);
-}
-
-bool WarHammer::io::File::isDirectory(void)
-{
-	return false;
-}
-
-void WarHammer::io::File::open(void)
-{
-	if(this->_name == "")
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::INVALID_NAME, this);
-
-	this->_file = freopen(this->getCompleteName().getCString(), this->_openFlags.getCString(), this->_file);
-
-	if(!this->_file)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::OPEN_ERROR, this);
-
-	this->_closed = false;
-}
-
-void WarHammer::io::File::open(WarHammer::util::String completeEntryName, unsigned int openFlags)
+void WarHammer::io::File::_open(WarHammer::util::String completeEntryName, unsigned int openFlags)
 {
 	if(completeEntryName == "")
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::INVALID_NAME, this);
+		ThrowNewException(WarHammer::io::exception::FileException::INVALID_NAME, this);
 
 	if(this->_file)
 	{
@@ -119,8 +98,6 @@ void WarHammer::io::File::open(WarHammer::util::String completeEntryName, unsign
 		delete this->_file;
 		this->_openFlags = "";
 	}
-
-	FileSystemEntry::open(completeEntryName, openFlags);
 
 	if(openFlags & File::READ)
 		this->_openFlags += 'r';
@@ -134,13 +111,53 @@ void WarHammer::io::File::open(WarHammer::util::String completeEntryName, unsign
 	if(openFlags & File::BINARY)
 		this->_openFlags += 'b';
 
-	if(openFlags & File::CREATE)
-		this->_openFlags += '+';
-
 	this->_file = fopen(this->getCompleteName().getCString(), this->_openFlags.getCString());
 
 	if(!this->_file)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::OPEN_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::OPEN_ERROR, this);
+
+	this->_closed = false;
+}
+
+void WarHammer::io::File::close(void)
+{
+	if(!this->_closed)
+	{
+		this->_closed = true;
+
+		if(fclose(this->_file))
+			ThrowNewException(WarHammer::io::exception::FileException::CLOSE_ERROR, this);
+	}
+}
+
+void WarHammer::io::File::flush(void)
+{
+	if(this->_closed)
+		ThrowNewException(WarHammer::io::exception::FileException::CLOSED, this);
+
+	if(fflush(this->_file))
+		ThrowNewException(WarHammer::io::exception::FileException::FLUSH_ERROR, this);
+}
+
+bool WarHammer::io::File::isDirectory(void)
+{
+	return false;
+}
+
+bool WarHammer::io::File::isFile(void)
+{
+	return true;
+}
+
+void WarHammer::io::File::open(void)
+{
+	if(this->_name == "")
+		ThrowNewException(WarHammer::io::exception::FileException::INVALID_NAME, this);
+
+	this->_file = freopen(this->getCompleteName().getCString(), this->_openFlags.getCString(), this->_file);
+
+	if(!this->_file)
+		ThrowNewException(WarHammer::io::exception::FileException::OPEN_ERROR, this);
 
 	this->_closed = false;
 }
@@ -148,14 +165,13 @@ void WarHammer::io::File::open(WarHammer::util::String completeEntryName, unsign
 WarHammer::util::String WarHammer::io::File::readAll(void)
 {
 	if(this->_closed)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::CLOSED, this);
+		ThrowNewException(WarHammer::io::exception::FileException::CLOSED, this);
 
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	unsigned int size = 0;
 	unsigned int result = 0;
-	WarHammer::util::String content;
 
 	fseek(this->_file, 0, SEEK_END);
 	size = ftell(this->_file);
@@ -169,10 +185,10 @@ WarHammer::util::String WarHammer::io::File::readAll(void)
 		{
 			delete[] buffer;
 
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_ERROR, this);
+			ThrowNewException(WarHammer::io::exception::FileException::READ_ERROR, this);
 		}
 
-	content = buffer;
+	WarHammer::util::String content(buffer, result);
 	delete[] buffer;
 
 	return content;
@@ -181,13 +197,13 @@ WarHammer::util::String WarHammer::io::File::readAll(void)
 bool WarHammer::io::File::readBoolean(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	int buffer;
 
 	if(fscanf(this->_file, "%d", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return static_cast<bool>(buffer);
 }
@@ -195,7 +211,7 @@ bool WarHammer::io::File::readBoolean(void)
 char* WarHammer::io::File::readBytes(unsigned int quantity)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	char* buffer = new char[quantity];
 	buffer[0] = '\0';
@@ -205,14 +221,14 @@ char* WarHammer::io::File::readBytes(unsigned int quantity)
 	{
 		delete[] buffer;
 
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_ERROR, this);
 	}
 
 	if(buffer[0] == '\0' && feof(this->_file))
 	{
 		delete[] buffer;
 
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+		ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 	}
 
 	return buffer;
@@ -221,13 +237,13 @@ char* WarHammer::io::File::readBytes(unsigned int quantity)
 char WarHammer::io::File::readCharacter(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	char buffer;
 
 	if(fscanf(this->_file, "%c", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -235,13 +251,13 @@ char WarHammer::io::File::readCharacter(void)
 double WarHammer::io::File::readDouble(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	double buffer;
 
 	if(fscanf(this->_file, "%lf", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -249,13 +265,13 @@ double WarHammer::io::File::readDouble(void)
 float WarHammer::io::File::readFloat(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	float buffer;
 
 	if(fscanf(this->_file, "%f", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -263,13 +279,13 @@ float WarHammer::io::File::readFloat(void)
 int WarHammer::io::File::readInteger(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	int buffer;
 
 	if(fscanf(this->_file, "%d", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -277,14 +293,14 @@ int WarHammer::io::File::readInteger(void)
 WarHammer::util::String WarHammer::io::File::readLine(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	char buffer[1024] = {'\0'};
 
 	fgets(buffer, 1024, this->_file);
 
 	if(buffer[0] == '\0' && feof(this->_file))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+		ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -292,13 +308,13 @@ WarHammer::util::String WarHammer::io::File::readLine(void)
 long WarHammer::io::File::readLong(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	long buffer;
 
 	if(fscanf(this->_file, "%ld", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -306,13 +322,13 @@ long WarHammer::io::File::readLong(void)
 short WarHammer::io::File::readShort(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	short buffer;
 
 	if(fscanf(this->_file, "%hd", &buffer) == EOF)
 		if(feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -325,20 +341,20 @@ void WarHammer::io::File::readStreamable(IStreamable* streamable)
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 
 WarHammer::util::String WarHammer::io::File::readString(void)
 {
 	if(!(this->_flags & File::READ))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::READ_MODE_ERROR, this);
 
 	char buffer[256] = {'\0'};
 
 	if(fscanf(this->_file, "%s", buffer) == EOF)
 		if(buffer[0] == '\0' && feof(this->_file))
-			throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::END_OF_FILE, this);
+			ThrowNewException(WarHammer::io::exception::FileException::END_OF_FILE, this);
 
 	return buffer;
 }
@@ -346,55 +362,55 @@ WarHammer::util::String WarHammer::io::File::readString(void)
 void WarHammer::io::File::writeBoolean(bool value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%d", static_cast<int>(value)) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeBytes(char* value, unsigned int quantity)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fwrite(value, 1, quantity, this->_file) != quantity)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeCharacter(char value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%c", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeDouble(double value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%lf", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeFloat(float value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%f", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeInteger(int value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%d", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeLine(WarHammer::util::String value)
@@ -405,26 +421,26 @@ void WarHammer::io::File::writeLine(WarHammer::util::String value)
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 
 void WarHammer::io::File::writeLong(long value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%ld", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeShort(short value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fprintf(this->_file, "%hd", value) < 0)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }
 
 void WarHammer::io::File::writeStreamable(IStreamable* streamable)
@@ -435,15 +451,15 @@ void WarHammer::io::File::writeStreamable(IStreamable* streamable)
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		throw exception;
+		ThrowException(exception);
 	}
 }
 
 void WarHammer::io::File::writeString(WarHammer::util::String value)
 {
 	if(!(this->_flags & File::WRITE))
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_MODE_ERROR, this);
 
 	if(fputs(value.getCString(), this->_file) == EOF)
-		throw WarHammer::exception::Exception(WarHammer::io::exception::FileException::WRITE_ERROR, this);
+		ThrowNewException(WarHammer::io::exception::FileException::WRITE_ERROR, this);
 }

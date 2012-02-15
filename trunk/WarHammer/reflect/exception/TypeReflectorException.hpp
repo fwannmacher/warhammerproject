@@ -36,6 +36,8 @@
 #ifndef __WarHammer_reflect_exception_TYPEREFLECTOREXCEPTION_HPP__
 #define __WarHammer_reflect_exception_TYPEREFLECTOREXCEPTION_HPP__
 
+#include "../../exception/Exception.hpp"
+
 namespace WarHammer
 {
 	namespace reflect
@@ -46,8 +48,8 @@ namespace WarHammer
 			class TypeReflectorException
 			{
 			public:
-				static const unsigned int TYPE_ALREADY_REGISTERED;
-				static const unsigned int UNREGISTERED_TYPE;
+				static const unsigned int TYPE_ALREADY_REGISTERED = GetExceptionUniqueIdentification();
+				static const unsigned int UNREGISTERED_TYPE = GetExceptionUniqueIdentification();
 			};
 
 		}

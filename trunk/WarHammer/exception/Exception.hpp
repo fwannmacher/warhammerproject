@@ -36,6 +36,27 @@
 #ifndef __WarHammer_exception_EXCEPTION_HPP__
 #define __WarHammer_exception_EXCEPTION_HPP__
 
+#include "util/StackTracer.hpp"
+
+#define ThrowNewException(code, thrower) \
+		{ \
+			WarHammer::exception::util::StackTracer::Instance()->initializeNewStackTrace(code, #code); \
+			WarHammer::exception::util::StackTracer::Instance()->appendStackTrace(code, WarHammer::util::String::Format("%s:%d", __FILE__, __LINE__)); \
+			throw WarHammer::exception::Exception(code, thrower); \
+		}
+
+#define ThrowException(exception) \
+		{ \
+			WarHammer::exception::util::StackTracer::Instance()->appendStackTrace(exception.getCode(), WarHammer::util::String::Format("%s:%d", __FILE__, __LINE__)); \
+			throw exception ; \
+		}
+
+#define ExtractStackTrace(exception) \
+		WarHammer::exception::util::StackTracer::Instance()->getStackTrace(exception.getCode(), __FILE__, __LINE__)
+
+#define GetExceptionUniqueIdentification() \
+		__COUNTER__ + 1
+
 namespace WarHammer
 {
 	namespace exception
@@ -48,7 +69,7 @@ namespace WarHammer
 		 *
 		 * WarHammer::exception::Exception is a generic concept of an exception. That has an integer code to identify the exception it is and a pointer to the thrower if it is set.
 		 *
-		 * @see WarHammer::exception::ExceptionIdentificationGenerator
+		 * @see WarHammer::exception::UniqueIdentificationGenerator
 		 *
 		 * @author Felipe Wannmacher
 		 *
@@ -79,7 +100,7 @@ namespace WarHammer
 			 * @param code The exception's code.
 			 * @param thrower The exception's thrower.
 			 */
-			Exception(unsigned int code, void* thrower = NULL);
+			Exception(unsigned int code, void* thrower);
 			virtual ~Exception(void);
 			/**
 			 * @brief Get the exception's code.

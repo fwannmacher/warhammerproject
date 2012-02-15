@@ -66,11 +66,8 @@ int main(int argc, char** argv)
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
-		//Here you can see the exceptions thrown by the TypeReflector.
-		if(exception.getCode() == WarHammer::common::exception::TypeReflectorException::TYPE_ALREADY_REGISTERED)
-			std::cout << "The type is already registered!" << std::endl;
-		else if(exception.getCode() == WarHammer::common::exception::TypeReflectorException::UNREGISTERED_TYPE)
-			std::cout << "The type is not registered!" << std::endl;
+		//Here you can see the stack trace of the exceptions thrown by the TypeReflector.
+		std::cout << ExtractStackTrace(exception).getCString() << std::endl;
 	}
 
 	return 0;

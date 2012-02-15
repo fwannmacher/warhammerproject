@@ -54,7 +54,7 @@ WarHammer::thread::ThreadPool::~ThreadPool(void)
 void WarHammer::thread::ThreadPool::setNumberOfThreads(unsigned int numberOfThreads)
 {
 	if(!this->_threads.empty())
-		throw WarHammer::exception::Exception(WarHammer::thread::exception::ThreadPoolException::THREAD_QUANTITY_ALREADY_SET, this);
+		ThrowNewException(WarHammer::thread::exception::ThreadPoolException::THREAD_QUANTITY_ALREADY_SET, this);
 
 	for(unsigned int i = 0; i < numberOfThreads; ++i)
 	{

@@ -279,7 +279,7 @@ template<typename Content, typename TreeNodeSubclass>
 void WarHammer::datastructure::util::TreeExpressionInterpreterVisitor<Content, TreeNodeSubclass>::visit(WarHammer::util::ExpressionInterpreterSyntaxValidator<std::vector<Content> >* validator)
 {
 	if(!this->_isExpressionValid(validator->getExpression()))
-		throw WarHammer::exception::Exception(WarHammer::util::exception::ExpressionInterpreterException::INVALID_EXPRESSION, this);
+		ThrowNewException(WarHammer::util::exception::ExpressionInterpreterException::INVALID_EXPRESSION, this);
 }
 
 template<typename Content, typename TreeNodeSubclass>

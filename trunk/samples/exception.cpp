@@ -35,41 +35,37 @@
 
 #include <iostream>
 #include "../WarHammer/exception/Exception.hpp"
-#include "../WarHammer/exception/util/ExceptionIdentificationGenerator.hpp"
 
 //Create a class with constants that will be the exceptions you need handle.
 class MyException
 {
 public:
-	static const unsigned int EXCEPTION_CODE_1;
-	static const unsigned int EXCEPTION_CODE_2;
+	//Use the GetExceptionUniqueIdentification macro to generate an unique identification to your exception's constants.
+	static const unsigned int EXCEPTION_CODE_1 = GetExceptionUniqueIdentification();
+	static const unsigned int EXCEPTION_CODE_2 = GetExceptionUniqueIdentification();
 };
-
-//Use the WarHammer::exception::ExceptionIdentificationGenerator to generate an unique identification to your constants.
-const unsigned int MyException::EXCEPTION_CODE_1 = WarHammer::exception::ExceptionIdentificationGenerator::Instance()->generateIdentification();
-const unsigned int MyException::EXCEPTION_CODE_2 = WarHammer::exception::ExceptionIdentificationGenerator::Instance()->generateIdentification();
 
 int main(int argc, char** argv)
 {
 	try
 	{
 		//Then throw a WarHammer::exception::Exception passing the code you created.
-		throw WarHammer::exception::Exception(MyException::EXCEPTION_CODE_1);
+		ThrowNewException(MyException::EXCEPTION_CODE_1, NULL); //Using the ThrowNewException macro you'll set the trace values for a future debug.
 	}
 	catch(WarHammer::exception::Exception exception)
 	{
 		//Now catch the exception and handle it based on the code that has.
-		if(exception.getCode() == MyException::EXCEPTION_CODE_1)
-			std::cout << "Catch an exception with code MyException::EXCEPTION_CODE_1[" << MyException::EXCEPTION_CODE_1 << "]" << std::endl;
-		else if(exception.getCode() == MyException::EXCEPTION_CODE_2)
-			std::cout << "Catch an exception with code MyException::EXCEPTION_CODE_2[" << MyException::EXCEPTION_CODE_2 << "]" << std::endl;
-		else
+		switch(exception.getCode())
 		{
+		case MyException::EXCEPTION_CODE_1:
+		case MyException::EXCEPTION_CODE_2:
+			std::cout << ExtractStackTrace(exception).getCString() << std::endl; //You may use the ExtractStackTrace to get the stack trace.			
+			break;
+		default:
 			std::cout << "I don't know that code and I'll throw it up!" << std::endl;
-
-			throw exception;
+			ThrowException(exception); //Use the ThrowException macro to set the trace logs on the exception.
+			break;
 		}
-
 	}
 
 	return 0;

@@ -26,59 +26,55 @@
  *                                  N   NN  N N N N N   N    N
  *                                N N   N N NNN NNN NNN NNN  N
  *
- * ExpressionInterpreterSyntaxValidator.tpp
+ * Directory.hpp
  *
- *  Created on: Jun 02, 2011
+ *  Created on: Sep 12, 2011
  *      Author: Felipe Wannmacher
  *	   License: LGPL - http://http://www.gnu.org/licenses/lgpl.html
  */
 
-#ifdef __WarHammer_util_EXPRESSIONINTERPRETERSYNTAXVALIDATOR_HPP__
+#ifndef __WarHammer_io_DIRECTORY_HPP__
+#define __WarHammer_io_DIRECTORY_HPP__
 
-#include "../exception/Exception.hpp"
+#include <dirent.h>
+#include "FileSystemEntry.hpp"
+#include "File.hpp"
 
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::ExpressionInterpreterSyntaxValidator(WarHammer::util::String expression)
+namespace WarHammer
 {
-	this->_expression = expression;
-	this->_validExpressionValue = false;
-}
-
-template<typename ExpressionResult>
-WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::~ExpressionInterpreterSyntaxValidator(void)
-{
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::accept(WarHammer::util::IExpressionInterpreterComponentVisitor<ExpressionResult>* visitor)
-{
-	try
+	namespace io
 	{
-		visitor->visit(this);
+
+		class Directory: public FileSystemEntry
+		{
+		public:
+			static Directory* CreateDirectory(WarHammer::util::String completeDirectoryName);
+		private:
+			bool _closed,
+				 _entriesLoaded;
+			DIR* _directory;
+			std::vector<Directory*> _directories;
+			std::vector<FileSystemEntry*> _entries;
+			std::vector<File*> _files;
+		private:
+			void _loadEntries(void);
+			void _open(WarHammer::util::String completeEntryName, bool recursive);
+		public:
+			Directory(void);
+			Directory(WarHammer::util::String completeEntryName, bool recursive = false);
+			virtual ~Directory(void);
+			void close(void);
+			Directory* createDirectory(WarHammer::util::String directoryName);
+			File* createFile(WarHammer::util::String fileName);
+			std::vector<Directory*> getDirectories(void);
+			std::vector<FileSystemEntry*> getEntries(void);
+			std::vector<File*> getFiles(void);
+			bool isDirectory(void);
+			bool isFile(void);
+			void open(void);
+		};
+
 	}
-	catch(WarHammer::exception::Exception exception)
-	{
-		ThrowException(exception);
-	}
-}
-
-template<typename ExpressionResult>
-WarHammer::util::String WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpression(void)
-{
-	return this->_expression;
-}
-
-template<typename ExpressionResult>
-ExpressionResult WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::getExpressionResult(void)
-{
-	ExpressionResult expressionResult;
-
-	return expressionResult;
-}
-
-template<typename ExpressionResult>
-void WarHammer::util::ExpressionInterpreterSyntaxValidator<ExpressionResult>::setExpressionResult(ExpressionResult expressionResult)
-{
 }
 
 #endif

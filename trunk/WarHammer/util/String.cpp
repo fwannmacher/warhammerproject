@@ -37,6 +37,8 @@
 
 #include <cctype>
 #include <sstream>
+#include <cstdarg>
+#include <cstdio>
 
 WarHammer::util::String::String(void)
 {
@@ -62,6 +64,11 @@ WarHammer::util::String::String(char* string)
 	this->_content = string;
 }
 
+WarHammer::util::String::String(char* string, unsigned int size)
+{
+	this->_content = std::string(string, size);
+}
+
 WarHammer::util::String::String(const char* string)
 {
 	this->_content = string;
@@ -76,7 +83,7 @@ WarHammer::util::String::~String(void)
 {
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(int value)
+WarHammer::util::String WarHammer::util::String::ValueOf(int value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -84,7 +91,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(int value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(unsigned int value)
+WarHammer::util::String WarHammer::util::String::ValueOf(unsigned int value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -92,7 +99,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(unsigned int value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(short value)
+WarHammer::util::String WarHammer::util::String::ValueOf(short value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -100,7 +107,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(short value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(unsigned short value)
+WarHammer::util::String WarHammer::util::String::ValueOf(unsigned short value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -108,7 +115,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(unsigned short value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(long value)
+WarHammer::util::String WarHammer::util::String::ValueOf(long value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -116,7 +123,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(long value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(unsigned long value)
+WarHammer::util::String WarHammer::util::String::ValueOf(unsigned long value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -124,7 +131,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(unsigned long value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(char value)
+WarHammer::util::String WarHammer::util::String::ValueOf(char value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << (int)value;
@@ -132,7 +139,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(char value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(unsigned char value)
+WarHammer::util::String WarHammer::util::String::ValueOf(unsigned char value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << (unsigned int)value;
@@ -140,7 +147,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(unsigned char value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(bool value)
+WarHammer::util::String WarHammer::util::String::ValueOf(bool value)
 {
 	std::string string = "";
 
@@ -152,7 +159,7 @@ WarHammer::util::String WarHammer::util::String::valueOf(bool value)
 	return String(string);
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(float value)
+WarHammer::util::String WarHammer::util::String::ValueOf(float value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
@@ -160,12 +167,23 @@ WarHammer::util::String WarHammer::util::String::valueOf(float value)
 	return String(stream.str());
 }
 
-WarHammer::util::String WarHammer::util::String::valueOf(double value)
+WarHammer::util::String WarHammer::util::String::ValueOf(double value)
 {
 	std::ostringstream stream(std::ostringstream::out);
 	stream << value;
 
 	return String(stream.str());
+}
+
+WarHammer::util::String WarHammer::util::String::Format(WarHammer::util::String format, ...)
+{
+	char buffer[1024];
+	va_list arguments;
+	va_start(arguments, format);
+	vsprintf(buffer, format.getCString(), arguments);
+	va_end(arguments);
+
+	return String(buffer);
 }
 
 WarHammer::util::String& WarHammer::util::String::operator=(std::string& string)
